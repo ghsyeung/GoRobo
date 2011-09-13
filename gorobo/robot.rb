@@ -94,6 +94,6 @@ private
   end
   
   def die
-    #print "#{name} exclaims: 'Oh, the humanity!'"
+    print "#{self.name} exclaims: 'Oh, the humanity!'" unless self.is_a?(Rocket)
   end
 end
