@@ -7,8 +7,8 @@ module World
 
   def setup(robots)
     @robots = robots
-    @max_x = 20
-    @max_y = 20
+    @max_x = 30
+    @max_y = 30
   end
 
   def end_turn
@@ -36,7 +36,7 @@ module World
   def rocket (r)
     rocket = Rocket.new(:x => r.x, :y => r.y, :direction => r.direction) do
       while(true)
-        move(3)
+        move(1)
       end
     end
     rocket.run
@@ -60,7 +60,7 @@ module World
 
     print "\n\n"
     robots.each do |r|
-      puts "#{r.name} - [ Health: #{r.health} | X: #{r.x} | Y: #{r.y} ]"
+      puts "#{r.name} - [ Health: #{r.health} | X: #{r.x} | Y: #{r.y} ]" unless r.is_a?(Rocket)
     end
   end
 
