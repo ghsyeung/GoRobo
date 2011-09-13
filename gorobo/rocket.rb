@@ -5,7 +5,7 @@ class Rocket
     self.x = options[:x] 
     self.y = options[:y] 
     self.direction = options[:direction]
-    self.name = options[:name]
+    self.name = "Rocket"
     self.alive = true
 
     @thread = Fiber.new do
@@ -32,7 +32,6 @@ class Rocket
   end
 
   def collide(stuff)
-    puts "Dying!"
     self.alive = false
   end
 

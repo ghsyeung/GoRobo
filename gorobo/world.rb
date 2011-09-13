@@ -1,5 +1,5 @@
 module World
-  SLEEP_DURATION = 0.1
+  SLEEP_DURATION = 1
 
   extend self
 
@@ -7,8 +7,8 @@ module World
 
   def setup(robots)
     @robots = robots
-    @max_x = 100
-    @max_y = 100
+    @max_x = 10
+    @max_y = 10
   end
 
   def end_turn
@@ -17,6 +17,8 @@ module World
 
   def run
     while (robots.select{|r| !r.is_a?(Rocket)}.count > 1) do
+      puts "\e[H\e[2J"
+
       robots.each do |r|
         old_location = [r.x, r.y]
         r.run
@@ -38,22 +40,39 @@ module World
   end
 
   def print_status
+    (@max_y + 1).times do |y|
+      (@max_x + 1).times do |x|
+        robot = robots.find{|r| r.x == x && r.y == y}
+        if robot && robot.is_a?(Robot)
+          print "R"
+        elsif robot && robot.is_a?(Rocket)
+          print "*"
+        else
+          print "."
+        end
+      end
+      print "\n"
+    end
+
+    print "\n\n"
     robots.each do |r|
-      puts "#{r.name}: [ Health: #{r.health} | X: #{r.x} | Y: #{r.y} ]"
+      puts "#{r.name} - [ Health: #{r.health} | X: #{r.x} | Y: #{r.y} ]"
     end
   end
 
   def detect_collisions(r, old_location)
     if r.x < 0 || r.y < 0 || r.x > @max_x || r.y > @max_y
       r.collide :damage => 10, :new_location => old_location
+      return true
     end
 
     if other = robots.find { |other| other != r && other.x == r.x && other.y == r.y }
-      puts "#{r.name} is colliding with #{other.name}"
-
       r.collide :damage => 10, :new_location => old_location
       other.collide :damage => 10
+      return true
     end
+
+    return false
   end
 
 private
