@@ -1,45 +1,11 @@
-class Rocket
+class Rocket < Robot
   attr_accessor :x, :y, :direction, :alive, :name
 
   def initialize(options)
-    self.x = options[:x] 
-    self.y = options[:y] 
-    self.direction = options[:direction]
-    self.name = "Rocket"
-    self.alive = true
-
-    @thread = Fiber.new do
-      while(true) do
-        case direction
-        when 0
-          self.y -= 1
-        when 90
-          self.x += 1
-        when 180
-          self.y += 1
-        when 270
-          self.x -= 1
-        else
-          raise "horrible things have happened"
-        end
-        Fiber.yield
-      end
-    end
+    @health = 5
+    @max_dist = 20
+    @strength = 10
+    super
   end
 
-  def health
-    5
-  end
-
-  def collide(stuff)
-    self.alive = false
-  end
-
-  def alive?
-    alive
-  end
-
-  def run
-    @thread.resume
-  end
 end

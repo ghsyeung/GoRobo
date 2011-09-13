@@ -1,15 +1,12 @@
 require 'fiber'
 
 class Robot
-  attr_reader :health
-  attr_reader :x
-  attr_reader :y
-  attr_reader :name
-  attr_reader :direction
+
+  attr_reader :health, :x, :y, :name, :direction
 
   def initialize(options={}, &proc)
     opt = options.dup
-    @health = opt[:health] || 100
+    # @health = opt[:health] || 100
     @x = opt[:x] || 0
     @y = opt[:y] || 0
     @direction = opt[:direction]
@@ -25,7 +22,7 @@ class Robot
   end
 
   def move(dist)
-    
+    dist = self.max_dist if dist > self.max_dist
     case @direction
     when 0
       @y -= dist
