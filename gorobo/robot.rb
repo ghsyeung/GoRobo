@@ -24,19 +24,20 @@ class Robot
   def move(dist)
     dist = @max_dist if dist > @max_dist
     dist.times do
+      old_location = [@x, @y]
       case @direction
       when 0
-        @y -= dist
+        @y -= 1
       when 90
-        @x += dist
+        @x += 1
       when 180
-        @y += dist
+        @y += 1
       when 270
-        @x -= dist
+        @x -= 1
       else
         raise "That direction is an invalid."
       end
-      break if World.detect_collision
+      break if World.detect_collisions(self, old_location)
     end
     
     end_round
@@ -56,7 +57,7 @@ class Robot
   def collide(options={})
     opt = options.dup
     self.hit(opt[:damage])
-    if opt[:new_location]
+    if opt[:new_location] && alive?
       @x = opt[:new_location].first
       @y = opt[:new_location].last
     end
@@ -93,6 +94,6 @@ private
   end
   
   def die
-    print "#{name} exclaims: 'Oh, the humanity!'"
+    #print "#{name} exclaims: 'Oh, the humanity!'"
   end
 end

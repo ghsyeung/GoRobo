@@ -7,8 +7,8 @@ module World
 
   def setup(robots)
     @robots = robots
-    @max_x = 10
-    @max_y = 10
+    @max_x = 20
+    @max_y = 20
   end
 
   def end_turn
@@ -34,7 +34,11 @@ module World
   end
 
   def rocket (r)
-    rocket = Rocket.new(:x => r.x, :y => r.y, :direction => r.direction)
+    rocket = Rocket.new(:x => r.x, :y => r.y, :direction => r.direction) do
+      while(true)
+        move(3)
+      end
+    end
     rocket.run
     robots << rocket
   end
@@ -43,10 +47,10 @@ module World
     (@max_y + 1).times do |y|
       (@max_x + 1).times do |x|
         robot = robots.find{|r| r.x == x && r.y == y}
-        if robot && robot.is_a?(Robot)
-          print "R"
-        elsif robot && robot.is_a?(Rocket)
+        if robot && robot.is_a?(Rocket)
           print "*"
+        elsif robot && robot.is_a?(Robot)
+          print "O"
         else
           print "."
         end
