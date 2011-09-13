@@ -50,7 +50,7 @@ module World
         if robot && robot.is_a?(Rocket)
           print "*"
         elsif robot && robot.is_a?(Robot)
-          print "O"
+          print robot.name[0]
         else
           print "."
         end
