@@ -7,8 +7,8 @@ module World
 
   def setup(robots)
     @robots = robots
-    @max_x = 20
-    @max_y = 20
+    @max_x = 30
+    @max_y = 30
   end
 
   def end_turn
