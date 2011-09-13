@@ -1,14 +1,11 @@
 require 'fiber'
 
 class Robot
-  attr_reader :health
-  attr_reader :x
-  attr_reader :y
-  attr_reader :name
+  attr_reader :health, :x, :y, :name
 
   def initialize(options={}, &proc)
     opt = options.dup
-    @health = opt[:health] || 100
+    # @health = opt[:health] || 100
     @x = opt[:x] || 0
     @y = opt[:y] || 0
     @direction = opt[:direction]
@@ -24,7 +21,7 @@ class Robot
   end
 
   def move(dist)
-    
+    dist = self.max_dist if dist > self.max_dist
     case @direction
     when 0
       @y -= dist
@@ -44,8 +41,8 @@ class Robot
   def turn(dir)
     unless [1,-1].include?(dir)
       @direction += dir*90
-      @direction = 270 if @direction = -90
-      @direction = 0 if @direction = 360
+      @direction = 270 if @direction == -90
+      @direction = 0 if @direction == 360
     else
       raise "You can only turn in 90-degree turning turns."
     end
