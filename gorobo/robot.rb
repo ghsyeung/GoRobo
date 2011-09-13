@@ -21,25 +21,28 @@ class Robot
   end
 
   def move(dist)
-    dist = self.max_dist if dist > self.max_dist
-    case @direction
-    when 0
-      @y -= dist
-    when 90
-      @x += dist
-    when 180
-      @y += dist
-    when 270
-      @x -= dist
-    else
-      raise "That direction is an invalid."
+    dist = @max_dist if dist > @max_dist
+    dist.times do
+      case @direction
+      when 0
+        @y -= dist
+      when 90
+        @x += dist
+      when 180
+        @y += dist
+      when 270
+        @x -= dist
+      else
+        raise "That direction is an invalid."
+      end
+      break if World.detect_collision
     end
     
     end_round
   end
   
   def turn(dir)
-    unless [1,-1].include?(dir)
+    if [1,-1].include?(dir)
       @direction += dir*90
       @direction = 270 if @direction == -90
       @direction = 0 if @direction == 360
