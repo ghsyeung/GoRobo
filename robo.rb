@@ -70,6 +70,15 @@ end
 
 
 
+r3 = Speedy.new(:x => 30, :y => 0, :direction => 180, :name => 'Grrl') do
+    while(true)
+			move(1)
+			turn(-1)
+			shoot
+    end
+  end
+
+
 World.setup [
   r, r2, r3, r4
 ]
