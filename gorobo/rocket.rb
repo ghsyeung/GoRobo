@@ -9,20 +9,21 @@ class Rocket
     self.alive = true
 
     @thread = Fiber.new do
-      
-      case direction
-      when 0
-        self.y -= 1
-      when 90
-        self.x += 1
-      when 180
-        self.y += 1
-      when 270
-        self.x -= 1
-      else
-        raise "horrible things have happened"
+      while(true) do
+        case direction
+        when 0
+          self.y -= 1
+        when 90
+          self.x += 1
+        when 180
+          self.y += 1
+        when 270
+          self.x -= 1
+        else
+          raise "horrible things have happened"
+        end
+        Fiber.yield
       end
-      Fiber.yield
     end
   end
 

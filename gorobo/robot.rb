@@ -5,6 +5,7 @@ class Robot
   attr_reader :x
   attr_reader :y
   attr_reader :name
+  attr_reader :direction
 
   def initialize(options={}, &proc)
     opt = options.dup
@@ -44,8 +45,8 @@ class Robot
   def turn(dir)
     unless [1,-1].include?(dir)
       @direction += dir*90
-      @direction = 270 if @direction = -90
-      @direction = 0 if @direction = 360
+      @direction = 270 if @direction == -90
+      @direction = 0 if @direction == 360
     else
       raise "You can only turn in 90-degree turning turns."
     end
@@ -55,11 +56,13 @@ class Robot
   def collide(options={})
     opt = options.dup
     self.hit(opt[:damage])
-    @x = opt[:new_location].first
-    @y = opt[:new_location].last
+    if opt[:new_location]
+      @x = opt[:new_location].first
+      @y = opt[:new_location].last
+    end
   end
 
-  def shoot(other)
+  def shoot
     World.rocket(self)
     end_round
   end
@@ -83,7 +86,6 @@ class Robot
 private
   def end_round
     die if dead?
-    print "#{name} [ Location: #{x} | Health: #{health}]\n"
     Fiber.yield
   end
   

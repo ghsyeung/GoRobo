@@ -1,12 +1,14 @@
-class World
+module World
   SLEEP_DURATION = 0.1
+
+  extend self
 
   attr_reader :robots, :max_x, :max_y
 
-  def initialize(robots)
+  def setup(robots)
     @robots = robots
-    @max_x
-    @max_y
+    @max_x = 100
+    @max_y = 100
   end
 
   def end_turn
@@ -14,14 +16,15 @@ class World
   end
 
   def run
-    while (robots.count > 1) do
+    while (robots.select{|r| !r.is_a?(Rocket)}.count > 1) do
       robots.each do |r|
         old_location = [r.x, r.y]
         r.run
         detect_collisions(r, old_location)
       end
-      print_status
       @robots = robots.select(&:alive?)
+
+      print_status
       sleep SLEEP_DURATION
     end
 
@@ -29,7 +32,9 @@ class World
   end
 
   def rocket (r)
-    robots << Rocket.new(:x => r.x, :y => r.y, :direction => r.direction)
+    rocket = Rocket.new(:x => r.x, :y => r.y, :direction => r.direction)
+    rocket.run
+    robots << rocket
   end
 
   def print_status
@@ -39,7 +44,13 @@ class World
   end
 
   def detect_collisions(r, old_location)
+    if r.x < 0 || r.y < 0 || r.x > @max_x || r.y > @max_y
+      r.collide :damage => 10, :new_location => old_location
+    end
+
     if other = robots.find { |other| other != r && other.x == r.x && other.y == r.y }
+      puts "#{r.name} is colliding with #{other.name}"
+
       r.collide :damage => 10, :new_location => old_location
       other.collide :damage => 10
     end
