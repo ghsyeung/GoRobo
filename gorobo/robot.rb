@@ -80,6 +80,9 @@ class Robot
     !dead?
   end
 
+protected
+  attr_writer :health, :x, :y, :name, :direction, :max_dist, :strength
+
 private
   def end_round
     die if dead?
