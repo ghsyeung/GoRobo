@@ -1,5 +1,5 @@
 module World
-  SLEEP_DURATION = 1
+  SLEEP_DURATION = 0.1
 
   extend self
 
@@ -36,7 +36,7 @@ module World
   def rocket (r)
     rocket = Rocket.new(:x => r.x, :y => r.y, :direction => r.direction) do
       while(true)
-        move(1)
+        move(5)
       end
     end
     rocket.run
@@ -60,7 +60,7 @@ module World
 
     print "\n\n"
     robots.each do |r|
-      puts "#{r.name} - [ Health: #{r.health} | X: #{r.x} | Y: #{r.y} ]" unless r.is_a?(Rocket)
+      puts "#{r.name} - [ Health: #{r.health} | X: #{r.x} | Y: #{r.y} | Direction: #{r.direction}]" unless r.is_a?(Rocket)
     end
   end
 

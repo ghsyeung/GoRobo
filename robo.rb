@@ -7,39 +7,54 @@ r = Speedy.new(:x => 0, :y => 0, :direction => 90, :name => 'Ryan') do
     if r.x == x 
       if (r.y < y)
         while (direction != 0)
-          r.turn(1)
+          turn(1)
         end
       else
         while (direction != 180)
-          r.turn(1)
+          turn(1)
         end
       end
     elsif r.y == y
       if (r.x < x)
-        while (direction != 90)
-          r.turn(1)
+        while (direction != 270)
+          turn(1)
         end
       else
-        while (direction != 270)
-          r.turn(1)
+        while (direction != 90)
+          turn(1)
         end
       end
     end
   end
 
+  def close_to_wall
+    (x <= 1 && direction == 270) ||
+    (y <= 1 && direction == 0) ||
+    (x >= 29 && direction == 90) ||
+    (y >= 29 && direction == 180)
+  end
+
   move(5)
   turn(1)
+  move(5)
     
   while (true) do
-    move(1)
     if (target = World.robots.find{|r| (r.x == x || r.y == y) && !r.is_a?(Rocket) && r != self})
       align(target)
       3.times { self.shoot }
+    else
+      if close_to_wall
+        turn 1 
+        turn 1
+        move 5 
+      else
+        move 1
+      end
     end
   end
 end
 
-r2 = AidanBot.new(:x => 0, :y => 30, :direction => 0, :name => 'AidanBot') do
+r2 = Speedy.new(:x => 0, :y => 30, :direction => 0, :name => 'AidanBot') do
   while(true)
     move 15
     turn 1
@@ -48,15 +63,31 @@ r2 = AidanBot.new(:x => 0, :y => 30, :direction => 0, :name => 'AidanBot') do
       turn 1
       shoot
     end
-<<<<<<< HEAD
-=======
   end
->>>>>>> 223c5aa604c09ae2805fad86aa756e4127fa666c
 end
 
-r3 = Speedy.new(:x => 0, :y => 30, :direction => 0, :name => 'Sleeper2') do
+r5 = Speedy.new(:x => 0, :y => 30, :direction => 0, :name => 'Spaz') do
+  def close_to_wall
+    (x <= 1 && direction == 270) ||
+    (y <= 1 && direction == 0) ||
+    (x >= 29 && direction == 90) ||
+    (y >= 29 && direction == 180)
+  end
+
   while(true)
-    wait
+    if (close_to_wall)
+      turn 1
+      turn 1
+      move 3
+    else
+      r = rand(3)
+      if r == 1
+        turn -1
+      else
+        move r
+      end
+      shoot
+    end
   end
 end
 
@@ -79,8 +110,10 @@ r3 = Speedy.new(:x => 30, :y => 0, :direction => 180, :name => 'Grrl') do
   end
 
 
+
+
 World.setup [
-  r, r2, r3, r4
+  r, r2, r3, r4, r5
 ]
 
 World.run
