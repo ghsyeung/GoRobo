@@ -34,3 +34,13 @@ class Speedy < Robot
   end
   
 end
+
+class AidanBot < Robot
+  
+  def initialize(options={},&proc)
+    @health = 1000000000000000000000
+    @max_dist = 10
+    @strength = 10
+    super
+  end
+end
