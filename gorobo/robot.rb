@@ -11,11 +11,18 @@ class Robot
     @y = opt[:y] || 0
     @direction = opt[:direction]
     @name = opt[:name]
+    @robo_type = self.class.name
 
     @thread = Fiber.new do
       self.instance_eval &proc
     end
   end
+
+  def player?
+    false
+  end
+
+  
 
   def run
     @thread.resume if @thread.alive?
@@ -94,6 +101,6 @@ private
   end
   
   def die
-    print "#{self.name} exclaims: 'Oh, the humanity!'" unless self.is_a?(Rocket)
+
   end
 end

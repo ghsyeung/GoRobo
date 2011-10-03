@@ -1,6 +1,7 @@
 autoload :World, './gorobo/world'
 autoload :Robot, './gorobo/robot'
 require './gorobo/types'
+require 'active_support'
 
 r = Speedy.new(:x => 0, :y => 0, :direction => 90, :name => 'Ryan') do
   def align(r)
@@ -111,9 +112,12 @@ r3 = Speedy.new(:x => 30, :y => 0, :direction => 180, :name => 'Grrl') do
 
 
 
+walls = []#(10..20).map { |i| Wall.new(:x => i, :y => 10, :direction => 180, :name => "Wall #{i}") }
+
+
 
 World.setup [
   r, r2, r3, r4, r5
-]
+] + walls
 
-World.run
+puts ActiveSupport::JSON.encode(World.run)

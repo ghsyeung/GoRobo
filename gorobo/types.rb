@@ -20,6 +20,10 @@ class FatAss < Robot
     super
   end
   
+  def player?
+    true
+  end
+
 end
 
 ###
@@ -32,15 +36,23 @@ class Speedy < Robot
     @strength = 10
     super
   end
+
+  def player?
+    true
+  end
   
 end
 
-class AidanBot < Robot
-  
+class Wall < Robot
+
   def initialize(options={},&proc)
-    @health = 1000000000000000000000
-    @max_dist = 10
+    @health = 100000000
+    @max_dist = 0
     @strength = 10
     super
+  end
+
+  def run
+    #walls can't do anything.
   end
 end

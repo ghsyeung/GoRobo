@@ -8,7 +8,7 @@ module World
   def setup(robots)
     @robots = robots
     @max_x = 30
-    @max_y = 30
+    @max_y = 20
   end
 
   def end_turn
@@ -16,21 +16,21 @@ module World
   end
 
   def run
-    while (robots.select{|r| !r.is_a?(Rocket)}.count > 1) do
-      puts "\e[H\e[2J"
+    initial_status = print_status
+    moves = []
 
+    while (robots.select(&:player?).count > 1) do
       robots.each do |r|
         old_location = [r.x, r.y]
         r.run
         detect_collisions(r, old_location)
+
+        moves << r
       end
       @robots = robots.select(&:alive?)
-
-      print_status
-      sleep SLEEP_DURATION
     end
 
-    puts "!!!! Winner - #{robots.first.name} !!!!!" if robots.any?
+    { :background => initial_status, :world_width => @max_x, :world_height => @max_y, :moves => moves, :winner => @robots.find(&:player?) }
   end
 
   def rocket (r)
@@ -44,24 +44,24 @@ module World
   end
 
   def print_status
+    out = ""
     (@max_y + 1).times do |y|
       (@max_x + 1).times do |x|
         robot = robots.find{|r| r.x == x && r.y == y}
-        if robot && robot.is_a?(Rocket)
-          print "*"
+        if robot && robot.is_a?(Wall)
+          out += "#"
+        elsif robot && robot.is_a?(Rocket)
+          out += "*"
         elsif robot && robot.is_a?(Robot)
-          print robot.name[0]
+          out += robot.name[0]
         else
-          print "."
+          out += "."
         end
       end
-      print "\n"
+      out += "\n"
     end
 
-    print "\n\n"
-    robots.each do |r|
-      puts "#{r.name} - [ Health: #{r.health} | X: #{r.x} | Y: #{r.y} | Direction: #{r.direction}]" unless r.is_a?(Rocket)
-    end
+    out += "\n\n"
   end
 
   def detect_collisions(r, old_location)
