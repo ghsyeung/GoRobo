@@ -12,6 +12,7 @@ class Robot
     @direction = opt[:direction]
     @name = opt[:name]
     @robo_type = self.class.name
+    @id = self.object_id
 
     @thread = Fiber.new do
       self.instance_eval &proc

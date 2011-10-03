@@ -52,8 +52,6 @@ module World
           out += "#"
         elsif robot && robot.is_a?(Rocket)
           out += "*"
-        elsif robot && robot.is_a?(Robot)
-          out += robot.name[0]
         else
           out += "."
         end
