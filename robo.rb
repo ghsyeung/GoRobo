@@ -36,7 +36,17 @@ r = Speedy.new(:x => 5, :y => 10, :direction => 0, :name => 'Ryan') do
     while self.x != x || self.y != y
       align_loc x, y
       move 1
+      patrol
     end
+  end
+
+  def patrol
+    turn 1
+    check_for_enemies
+    turn -1
+    turn -1
+    check_for_enemies
+    turn 1
   end
 
   def close_to_wall
@@ -71,7 +81,7 @@ r = Speedy.new(:x => 5, :y => 10, :direction => 0, :name => 'Ryan') do
     when 3
       move_to_loc(30,0)
       align_loc(30,30)
-    when 4
+    else
       move_to_loc(30,30)
       align_loc(0,0)
     end
@@ -82,11 +92,18 @@ r = Speedy.new(:x => 5, :y => 10, :direction => 0, :name => 'Ryan') do
     turn(1)
   end
 
-  while (true)
-    get_to_da_choppa
+  def check_for_enemies
     players = others.select(&:player?)
     if players.any?
       5.times { shoot }
+    end
+  end
+
+  while (true)
+    get_to_da_choppa
+    players = others.select(&:player?)
+    
+    while(true)
       get_to_choppa_number rand(4)
     end
   end
