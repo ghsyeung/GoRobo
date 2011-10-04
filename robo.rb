@@ -153,25 +153,31 @@ r13 = Speedy.new(:x => 15, :y => 5, :direction => 180, :name => 'hacked') do
       if(thing.player?)
         if(x == thing.x || y == thing.y) 
           shoot
-        else
-          thing.dx = (thing.x - x)
-          thing.dy = (thing.y - y)
-          thing.magnitude = Math.sqrt(thing.dx * thing.dx + thing.dy * thing.dy)
-          players << thing
         end
+        
+        leftovers = {
+          x: thing.x, 
+          y: thing.y,
+          dx: (thing.x - x),
+          dy: (thing.y - y)
+        }
+        
+        leftovers[:magnitude] = Math.sqrt(leftovers[:dx] * leftovers[:dx] + leftovers[:dy] * leftovers[:dy])
+        
+        players << leftovers
       else
         walls << thing
       end
     end
     
-    if(players.length)
+    if(players.any?)
       players.sort! { |a,b| a.magnitude <=> b.magnitude }
-      player = players.first
-      
+      player = players[0]
+
       # true -- move on x axis
       # true -- pointing to x axis
-      if(player.dx.abs > player.dy.abs == direction % 180)
-        move(player.dx.abs)
+      if(player[:dx].abs > player[:dy].abs == direction % 180)
+        move(player[:dx].abs)
       else 
         turn(1)
       end 
@@ -190,7 +196,7 @@ walls = (10..20).map { |i| Wall.new(:x => i, :y => 15, :direction => 180, :name 
 walls += (10..20).map { |i| Wall.new(:x => 15, :y => i, :direction => 180, :name => "Vert Wall #{i}") }
 
 World.setup [
-  r, r2, r3, r4
+  r, r2, r3, r4, r13
 ] + walls
 
 #puts World.print_status
@@ -199,3 +205,4 @@ World.setup [
 #end
 
 World.interactive_run
+# puts ActiveSupport::JSON.encode(World.run)
