@@ -2,171 +2,38 @@
 <html lang="en"> 
 <head> 
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
-  <title>GoRobo + Swears</title> 
-  <script src="jquery.min.js"></script> 
+  <title>GoRobo Swears interface</title> 
+  <script src="swears.js"></script> 
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script> 
 </head> 
 <body>
     
   <script type="text/javascript" charset="utf-8"> 
-      
-    // TODO: encapsulate this in a thingie
-    
-    SWEARS = {
-      setIntervalId: 0,
-      target: false,
-      width: false,
-      height: false,
-      composite: false,
-      layer_buffer: {},
-      layers: [],
-      
-      add_layer: function() {
-        layer = function() {
-          this.x = 0;
-          this.y = 0;
-          this.data = Array(Array(false));
-          this.key = SWEARS.layers.length;
-        }
-        
-        var new_layer = new layer();
-        SWEARS.layers.push(new_layer);
-        SWEARS.layer_buffer[SWEARS.layers.length - 1] = SWEARS.layers.length - 1; // THINK: this might not work if we've deleted layers
-        return new_layer;
-      },
-      
-      remove_layer: function(layer) {
-        // TODO: make this
-      },
-      
-      layer_move_up: function(layer) {
-        var index = SWEARS.layer_buffer[layer.key];
-        if(index == SWEARS.layers.length - 1) {return false;}
-        var next = SWEARS.layers[index + 1];
-        SWEARS.layers[index] = next;
-        SWEARS.layers[index + 1] = layer;
-        SWEARS.layer_buffer[layer.key]++;
-        SWEARS.layer_buffer[next.key]--;
-      },
-      
-      layer_move_down: function(layer) {
-        var index = SWEARS.layer_buffer[layer.key];
-        if(index == 0) {return false;}
-        var prev = SWEARS.layers[index - 1];
-        SWEARS.layers[index] = prev;
-        SWEARS.layers[index - 1] = layer;
-        SWEARS.layer_buffer[layer.key]--;
-        SWEARS.layer_buffer[prev.key]++;
-      },
-      
-      // use a renderer to display stuff
-      // TODO: allow renderer choice
-      render: function() {
-        SWEARS.renderers.pre();
-      },
-      
-      // start the sequence
-      play: function(framerate, target, width, height, callback) {
-        SWEARS.target = target;
-        SWEARS.width = width;
-        SWEARS.height = height;
-        
-        if(!parseInt(framerate)) {return false;}
-        var micros = parseInt(1000 / parseInt(framerate));
-        micros = micros < 10 ? 10 : micros;
-        SWEARS.setIntervalId = setInterval(function() {
-          callback();
-          SWEARS.render();
-        }, micros);
-      },
-      
-      // freeze time
-      pause: function() {
-        clearInterval(SWEARS.setIntervalId);
-        delete(SWEARS.setIntervalId);
-      },
-      
-      // TODO: move these outside and make it extensible
-      renderers: {
-        pre: function() {
-          // pre-initialize composite array
-          var composite = [];
-          for(var y = 0; y < SWEARS.height; y++) {
-            composite[y] = [];
-            for(var x = 0; x < SWEARS.width; x++) {
-              composite[y][x] = false;
-            }
-          }
-          
-          // composite layers
-          for(var i = 0; i < SWEARS.layers.length; i++) {
-            for(var y = SWEARS.layers[i].data.length - 1; y >= 0; y--) {
-              for(var x = SWEARS.layers[i].data[y].length - 1; x >= 0; x--) {
-                if(SWEARS.layers[i].data[y][x] !== false) {
-                  if(SWEARS.layers[i].invisible) {continue;}
-                  var true_y = y + SWEARS.layers[i].y;
-                  var true_x = x + SWEARS.layers[i].x;
-                  if(true_x < 0 || true_x >= SWEARS.width || true_y < 0 || true_y >= SWEARS.height) {continue;}
-                  composite[true_y][true_x] = SWEARS.layers[i].data[y][x];
-                }
-              }
-            }
-          }
-          
-          // composite -> string
-          var string = '';
-          for(var y = 0; y < SWEARS.height; y++) {
-            for(var x = 0; x < SWEARS.width; x++) {
-              string += composite[y][x] !== false ? composite[y][x] : ' ';
-            }
-            string += "\n";
-          }
-          
-          // render in target
-          SWEARS.target.innerHTML = string;
-        }
-      },
-      
-      // utility function for changing strings in matrices
-      make_matrix: function(string) {
-        var matrix = [];
-        var lines = string.split(/\n/);
-        for(var i=0; i < lines.length; i++) {
-          var chars = [];
-          for(var j=0; j < lines[i].length; j++) {
-            chars.push(lines[i][j]);
-          }
-          matrix.push(chars);
-        }
-        
-        return matrix;
-      }
-      
-    };
-    
-    
-    
-    // game specific stuff
-    
-    
-    
-    // callback thing
+    // an ugly globals thing and some initial values
+    var globals = {};
+    globals.framerate = 100;
+    globals.things = {};
+    globals.index = 0;
+
+    // callback for swears
     call_me = function() {
-      if(SWEARS.index >= SWEARS.moves.length - 1) {
-        $('#winner span.winner_name').text(file.winner.name);
+      if(globals.index >= globals.moves.length - 1) {
+        $('#winner span.winner_name').text(globals.file.winner.name);
         $('#winner').show();
-        SWEARS.pause();
+        Swears.pause();
+        delete(globals.file);
       }
       
       // cycle through the move list
-      var move = SWEARS.moves[SWEARS.index];
-      SWEARS.index++;
+      var move = globals.moves[globals.index];
+      globals.index++;
       
       // have we seen this thing?
-      if(!SWEARS.things[move.id]) {
+      if(!globals.things[move.id]) {
         // build thing
-        SWEARS.things[move.id] = {};
-        SWEARS.things[move.id].name = move.name || 'unnamed';
-        SWEARS.things[move.id].layer = SWEARS.add_layer();
+        globals.things[move.id] = {};
+        globals.things[move.id].name = move.name || 'unnamed';
+        globals.things[move.id].layer = Swears.add_layer();
         if(move.robo_type == 'Speedy') { // tank
           var charx = move.name.slice(0,1);
         } else if(move.robo_type == 'Wall') { // wall
@@ -175,27 +42,19 @@
           var charx = '*';          
         }
         
-        SWEARS.things[move.id].layer.data = [[charx]];
+        globals.things[move.id].layer.data = [[charx]];
       }
       
       // kill the thing?
       if(move.health <= 0) {
-        // TODO: make this better
-        SWEARS.things[move.id].layer.invisible = true;
-
         // remove the layer
-        delete(SWEARS.things[move.id].layer); 
+        Swears.remove_layer(globals.things[move.id].layer);
         
         // remove the thing
-        delete(SWEARS.things[move.id]);
+        delete(globals.things[move.id]);
         
-        // TODO: refactor me!
-        var div = $('#health');
-        if(!$('#' + move.id).length > 0 && move.name != null) {
-          div.append($('<p id="' + move.id + '"><span class="name">' + move.name + '</span>: <span class="health">' + move.health + '</span></p>'));
-        }
-        var p = $('#' + move.id);
-        $('.health', p).text('DEAD');
+        // display health
+        display_health(move);
         
         return false;
       }
@@ -204,62 +63,65 @@
       var new_x = move.x;
       var new_y = move.y;
       if(new_y <= 0) {new_y = 0;}
-      if(new_y >= SWEARS.height - 2) {new_y = SWEARS.height - 2} // one for the layer width, one for the zero-offset
+      if(new_y >= Swears.height - 2) {new_y = Swears.height - 2} // one for the layer width, one for the zero-offset
       if(new_x <= 0) {new_x = 0;}
-      if(new_x >= SWEARS.width - 2) {new_x = SWEARS.width - 2} // one for the layer width, one for the zero-offset
+      if(new_x >= Swears.width - 2) {new_x = Swears.width - 2} // one for the layer width, one for the zero-offset
       
       // move the thing
-      SWEARS.things[move.id].layer.x = new_x;
-      SWEARS.things[move.id].layer.y = new_y;
+      globals.things[move.id].layer.x = new_x;
+      globals.things[move.id].layer.y = new_y;
       
       // update the thing
-      SWEARS.things[move.id].health = move.health;
+      globals.things[move.id].health = move.health;
       
       // display health
+      display_health(move);
+    }
+    
+    display_health = function(move) {
       var div = $('#health');
       if(!$('#' + move.id).length > 0 && move.name != null) {
         div.append($('<p id="' + move.id + '"><span class="name">' + move.name + '</span>: <span class="health">' + move.health + '</span></p>'));
       }
       var p = $('#' + move.id);
-      $('.health', p).text(move.health);
-      
+      var health = move.health > 0 ? move.health : 'DECEASED';
+      $('.health', p).text(health);
     }
         
     // hook for anchor
     do_stuff = function() {
-      if(typeof file != 'undefined') {
-        SWEARS.play(SWEARS.framerate, document.getElementById('target'), file.world_width, file.world_height, call_me);
+      if(typeof globals.file != 'undefined') {
+        Swears.play(globals.framerate, document.getElementById('target'), globals.file.world_width, globals.file.world_height, call_me);
         return false;
       }
       
       // get array from the server (json file)
       $.getJSON('robo.json', function(json) {
-        file = json;
+        globals.file = json;
+        globals.moves = globals.file.moves;
+        
+        // clean up in case we're re-running
+        $('#winner').hide();
+        $('#health').html('');
         
         // put in background layer
-        var background = SWEARS.add_layer();
-        background.data = SWEARS.make_matrix(file.background);
+        var background = Swears.add_layer();
+        background.data = Swears.make_matrix(globals.file.background);
 
         // get width and height
-        var width = file.world_width;
-        var height = file.world_height;
-
-        // TODO: fix semi-nasty vars
-        SWEARS.things = {};
-        SWEARS.moves = file.moves;
-        SWEARS.index = 0;
+        var width = globals.file.world_width;
+        var height = globals.file.world_height;
 
         // start Swears with appropriate values
-        SWEARS.framerate = 100;
-        SWEARS.play(SWEARS.framerate, document.getElementById('target'), width, height, call_me);
+        Swears.play(globals.framerate, document.getElementById('target'), width, height, call_me);
       });
     }
     
   </script> 
-  
+    
   
   <a href="" onclick="do_stuff(); return false;">Play</a>
-  <a href="" onclick="SWEARS.pause(); return false;">Pause</a>
+  <a href="" onclick="Swears.pause(); return false;">Pause</a>
   
   <div id="winner" style="display:none"><strong>The winner is <span class="winner_name"></span>!!!</strong></div>
   
