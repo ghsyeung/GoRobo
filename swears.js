@@ -1,3 +1,7 @@
+// Swears text-based manipulation library
+// https://github.com/dxnn/swears
+
+
 // TODO: encapsulate this in a thingie
 
 Swears = {
