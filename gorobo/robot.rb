@@ -24,21 +24,48 @@ class Robot
   end
 
   def others
-    World.robots.select do |o| 
-      delta = {:x => o.x - self.x, :y => o.y - self.y}
+    candidates = World.robots.select do |o| 
+      unless o.is_a? Rocket
+        delta = {:x => o.x - self.x, :y => o.y - self.y}
 
-      case @direction
-      when 0 
-        o.y > self.y && delta[:y] >= delta[:x].abs
-      when 90
-        o.x > self.x && delta[:x] >= delta[:y].abs
-      when 180
-        o.y < self.y && delta[:y] >= delta[:x].abs
-      when 270
-        o.x < self.x && delta[:x] >= delta[:y].abs
+        case @direction
+        when 0 
+          o.y > self.y && delta[:y] >= delta[:x].abs
+        when 90
+          o.x > self.x && delta[:x] >= delta[:y].abs
+        when 180
+          o.y < self.y && delta[:y] >= delta[:x].abs
+        when 270
+          o.x < self.x && delta[:x] >= delta[:y].abs
+        end
+        
       end
     end
-  end  
+
+    candidates.select{|c| clear_path?(c.x, c.y, self, candidates)}
+  end
+
+  def clear_path?(x, y, o, candidates)
+    while (true)
+      delta = {:x => o.x - x, :y => o.y - y}
+      
+      if delta[:x] == 0 && delta[:y] == 0
+        return true
+      elsif delta[:x] > 0 && delta[:x] >= delta[:y].abs
+        x += 1
+      elsif delta[:y] > 0 && delta[:y] >= delta[:x].abs
+        y += 1
+      elsif delta[:x] < 0 && delta[:x].abs >= delta[:y].abs
+        x -= 1
+      else delta[:y] < 0 && delta[:y].abs >= delta[:x].abs
+        y -= 1
+      end
+
+      if c = candidates.find{|c| c.x == x && c.y == y && c != o}
+        return false
+      end
+    end
+  end
 
   def run
     @thread.resume if @thread.alive?

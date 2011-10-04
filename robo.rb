@@ -40,7 +40,7 @@ r = Speedy.new(:x => 15, :y => 15, :direction => 0, :name => 'Ryan') do
   move(5)
     
   while (true) do
-    if (target = World.robots.find{|r| (r.x == x || r.y == y) && !r.is_a?(Rocket) && r != self})
+    if (target = World.robots.find{|r| (r.x == x || r.y == y) && r.player? && r != self})
       align(target)
       3.times { self.shoot }
     else
@@ -87,18 +87,23 @@ r3 = Speedy.new(:x => 30, :y => 0, :direction => 180, :name => 'Grrl') do
 
 
 
-walls = []# (0..30).map { |i| Wall.new(:x => i, :y => 25, :direction => 180, :name => "Wall #{i}") }
-
+walls = (0..30).map { |i| Wall.new(:x => i, :y => 25, :direction => 180, :name => "Wall #{i}") }
+#walls << Wall.new(:x => 15, :y => 19, :direction => 180, :name => "Wall to see")
+#walls << Wall.new(:x => 14, :y => 19, :direction => 180, :name => "Wall to see")
+#walls << Wall.new(:x => 16, :y => 19, :direction => 180, :name => "Wall to see")
+#walls << Wall.new(:x => 13, :y => 19, :direction => 180, :name => "Wall to see")
+#walls << Wall.new(:x => 17, :y => 18, :direction => 180, :name => "Wall to see")
+#walls << Wall.new(:x => 14, :y => 15, :direction => 180, :name => "Wall left")
+#walls << Wall.new(:x => 16, :y => 15, :direction => 180, :name => "Wall right")
 
 
 World.setup [
   r, r2, r3, r4
 ] + walls
 
-#puts World.print_status
+puts World.print_status
+r.others.each do |robot|
+  puts robot.name
+end
 
-#r.others.each do |robot|
-#  puts robot.name
-#end
-
-puts ActiveSupport::JSON.encode(World.run)
+#World.interactive_run
