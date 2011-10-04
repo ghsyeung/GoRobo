@@ -8,7 +8,7 @@ module World
   def setup(robots)
     @robots = robots
     @max_x = 30
-    @max_y = 20
+    @max_y = 30
   end
 
   def end_turn
@@ -25,7 +25,7 @@ module World
         r.run
         detect_collisions(r, old_location)
 
-        moves << r
+        moves << {:id => r.id, :robo_type => r.robo_type, :health => r.health, :x => r.x, :y => r.y, :name => r.name}
       end
       @robots = robots.select(&:alive?)
     end
@@ -52,6 +52,8 @@ module World
           out += "#"
         elsif robot && robot.is_a?(Rocket)
           out += "*"
+        elsif robot && robot.is_a?(Robot)
+          out += robot.name[0]
         else
           out += "."
         end

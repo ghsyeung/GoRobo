@@ -3,7 +3,7 @@ autoload :Robot, './gorobo/robot'
 require './gorobo/types'
 require 'active_support'
 
-r = Speedy.new(:x => 0, :y => 0, :direction => 90, :name => 'Ryan') do
+r = Speedy.new(:x => 15, :y => 15, :direction => 0, :name => 'Ryan') do
   def align(r)
     if r.x == x 
       if (r.y < y)
@@ -67,31 +67,6 @@ r2 = Speedy.new(:x => 0, :y => 30, :direction => 0, :name => 'AidanBot') do
   end
 end
 
-r5 = Speedy.new(:x => 0, :y => 30, :direction => 0, :name => 'Spaz') do
-  def close_to_wall
-    (x <= 1 && direction == 270) ||
-    (y <= 1 && direction == 0) ||
-    (x >= 29 && direction == 90) ||
-    (y >= 29 && direction == 180)
-  end
-
-  while(true)
-    if (close_to_wall)
-      turn 1
-      turn 1
-      move 3
-    else
-      r = rand(3)
-      if r == 1
-        turn -1
-      else
-        move r
-      end
-      shoot
-    end
-  end
-end
-
 r4 = Speedy.new(:x => 30, :y => 30, :direction => 0, :name => 'Emery') do
   while(true)
     7.times { move 2; turn -1; move 2; turn 1} 
@@ -112,12 +87,18 @@ r3 = Speedy.new(:x => 30, :y => 0, :direction => 180, :name => 'Grrl') do
 
 
 
-walls = []#(10..20).map { |i| Wall.new(:x => i, :y => 10, :direction => 180, :name => "Wall #{i}") }
+walls = []# (0..30).map { |i| Wall.new(:x => i, :y => 25, :direction => 180, :name => "Wall #{i}") }
 
 
 
 World.setup [
-  r, r2, r3, r4, r5
+  r, r2, r3, r4
 ] + walls
+
+#puts World.print_status
+
+#r.others.each do |robot|
+#  puts robot.name
+#end
 
 puts ActiveSupport::JSON.encode(World.run)

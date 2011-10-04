@@ -2,7 +2,7 @@ require 'fiber'
 
 class Robot
 
-  attr_reader :health, :x, :y, :name, :direction
+  attr_reader :health, :x, :y, :name, :direction, :id, :robo_type
 
   def initialize(options={}, &proc)
     opt = options.dup
@@ -23,7 +23,22 @@ class Robot
     false
   end
 
-  
+  def others
+    World.robots.select do |o| 
+      delta = {:x => o.x - self.x, :y => o.y - self.y}
+
+      case @direction
+      when 0 
+        o.y > self.y && delta[:y] >= delta[:x].abs
+      when 90
+        o.x > self.x && delta[:x] >= delta[:y].abs
+      when 180
+        o.y < self.y && delta[:y] >= delta[:x].abs
+      when 270
+        o.x < self.x && delta[:x] >= delta[:y].abs
+      end
+    end
+  end  
 
   def run
     @thread.resume if @thread.alive?
