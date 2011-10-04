@@ -1,4 +1,4 @@
-// Swears text-based manipulation library
+// Swears text-based display and manipulation library
 // https://github.com/dxnn/swears
 
 
