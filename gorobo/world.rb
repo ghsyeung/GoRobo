@@ -33,6 +33,29 @@ module World
     { :background => initial_status, :world_width => @max_x, :world_height => @max_y, :moves => moves, :winner => @robots.find(&:player?) }
   end
 
+  def interactive_run
+    initial_status = print_status
+    moves = []
+
+    while (robots.select(&:player?).count > 1) do
+      puts "\e[H\e[2J"
+
+      robots.each do |r|
+        old_location = [r.x, r.y]
+        r.run
+        detect_collisions(r, old_location)
+
+        moves << {:id => r.id, :robo_type => r.robo_type, :health => r.health, :x => r.x, :y => r.y, :name => r.name}
+      end
+      @robots = robots.select(&:alive?)
+
+      print print_status
+      sleep SLEEP_DURATION
+    end
+
+    { :background => initial_status, :world_width => @max_x, :world_height => @max_y, :moves => moves, :winner => @robots.find(&:player?) }
+  end
+
   def rocket (r)
     rocket = Rocket.new(:x => r.x, :y => r.y, :direction => r.direction) do
       while(true)
