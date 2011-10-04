@@ -133,9 +133,54 @@ end
 
 r3 = Speedy.new(:x => 30, :y => 0, :direction => 180, :name => 'Grrl') do
     while(true)
-			move(1)
-			turn(-1)
-			shoot
+      move(1)
+      turn(-1)
+      shoot
+    end
+  end
+
+
+
+
+
+r13 = Speedy.new(:x => 30, :y => 0, :direction => 180, :name => 'hacked') do
+    while(true)
+      walls = [];
+      players = [];
+      
+      others.each do |thing|
+        # players?
+        if(thing.player?)
+          if(x == thing.x || y == thing.y) 
+            shoot
+          else
+            thing.dx = (thing.x - x)
+            thing.dy = (thing.y - y)
+            thing.magnitude = Math.sqrt(thing.dx * thing.dx + thing.dy * thing.dy)
+            players << thing
+          end
+        else
+          walls << thing
+        end
+      end
+      
+      if(players.length)
+        players.sort! { |a,b| a.magnitude <=> b.magnitude }
+        player = players.first
+        
+        # true -- move on x axis
+        # true -- pointing to x axis
+        if(player.dx.abs > player.dy.abs == direction % 180)
+          move(player.dx.abs)
+        else 
+          turn(1)
+        end 
+      else
+        # do something smarter here
+        turn(1)
+      end
+      
+      # do some wall stuff
     end
   end
 
