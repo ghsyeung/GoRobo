@@ -1,7 +1,7 @@
 module GoRobo
 module World
   SLEEP_DURATION = 0.1
-  MAX_TURNS = 100
+  MAX_TURNS = 1000
   extend Enumerable
   extend self
 
